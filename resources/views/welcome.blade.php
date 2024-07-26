@@ -45,7 +45,7 @@
                                         <label for="inputPassword6" class="col-form-label">Número Decimal</label>
                                     </div>
                                     <div class="col-auto">
-                                        <input type="text" id="decimal_number" class="form-control">
+                                        <input type="number" id="decimal_number" class="form-control">
                                     </div>
                                     <div class="col-auto">
                                         <button id="buttonDecimalNumber"

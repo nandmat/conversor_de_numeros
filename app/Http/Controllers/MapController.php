@@ -61,53 +61,43 @@ class MapController extends Controller
         return strtoupper($romanNumberal);
     }
 
+    /**
+     * aqui precisamos pegar valores especificos no db, pois cadastramos valores unicos para fazer funcionar
+     * na parte de converter de numero romano para numeral
+     */
+
     private function getRomanNumberToDecimalNumber(string $romanNumber)
     {
-        //Usamos os whereIn para pegar valores específicos no db, já que já temos cadastrados conjuntos de numeros romanos
-        //e algarismo unitários, por assim dizer
+        // Pegando valores específicos no banco de dados
         $maps = $this->entity
             ->whereIn('roman_numeral', ['m', 'd', 'c', 'l', 'x', 'v', 'i'])
-            ->get();
+            ->get()
+            ->keyBy('roman_numeral');
 
-        //O valor decimal é inicializado como zero;
         $decimalNumber = 0;
-
-        //Verificando o tamanho da string do numero romano
         $romanNumberLength = strlen($romanNumber);
+
         for ($i = 0; $i < $romanNumberLength; $i++) {
             $algarism = $romanNumber[$i];
+            $currentNumber = isset($maps[$algarism]) ? $maps[$algarism]->decimal_value : 0;
 
-            //declaramos uma function anonima para ficar responsável por lidar com a busca do valor real em
-            //relação ao algarismo romano da vez
-            $getCurrentNumber = function ($algarism) use ($maps) {
-                foreach ($maps as $map) {
-                    if ($map->roman_numeral == $algarism) {
-                        $value = $map->decimal_value;
-                        return $value;
-                    }
-                }
-            };
-
-            $currentNumber = $getCurrentNumber($algarism);
-
-            //Isso verifica se existe mais um caractere do algarismo romano informado
+            // Verifica se existe mais um caractere do algarismo romano informado
             if ($i + 1 < $romanNumberLength) {
                 $nextAlgarism = $romanNumber[$i + 1];
-                $nextCurrentNumber = $getCurrentNumber($nextAlgarism);
+                $nextCurrentNumber = isset($maps[$nextAlgarism]) ? $maps[$nextAlgarism]->decimal_value : 0;
 
-                //Se o valor o decimal atual for menor que o valor do próximo, vamos subtrair do valor atual
-                if ($nextCurrentNumber < $currentNumber) {
-                    $decimalNumber = $decimalNumber - $nextCurrentNumber;
+                // Se o valor atual for menor que o valor do próximo, subtrai
+                if ($nextCurrentNumber > $currentNumber) {
+                    $decimalNumber -= $currentNumber;
                 } else {
-                    //Se nao for, vamos fazer a adição ao valor atual
-                    $decimalNumber = $decimalNumber + $nextCurrentNumber;
+                    $decimalNumber += $currentNumber;
                 }
             } else {
-
-                //Se não existir mais caracteres no algarismo informado, realizamos a atribuição do valor encontrado até o momento
-                $decimalNumber = $decimalNumber + $currentNumber;
+                // Se não existir mais caracteres, adiciona o valor atual
+                $decimalNumber += $currentNumber;
             }
         }
+
         return $decimalNumber;
     }
 }

@@ -3,6 +3,10 @@ const buttonRomanNumeral = document.querySelector('#buttonRomanNumeral');
 const divResult = document.querySelector('#result');
 const spinner = document.querySelector('#spinner');
 
+document.querySelector('#roman_numeral').addEventListener(('input'), function(){
+    this.value = this.value.replace(/[^A-Za-z]/g, '');
+});
+
 
 buttonDecimalNumber.addEventListener('click', function () {
 
