@@ -8,8 +8,9 @@ use Exception;
 class MapController extends Controller
 {
 
-    protected $entity;
+    protected Map $entity;
 
+    //Usando injeção de dependência
     public function __construct(Map $map)
     {
         $this->entity = $map;
@@ -50,10 +51,17 @@ class MapController extends Controller
         $maps = $this->entity->all();
         //Declarando a variável que vai receber os valores referentes ao algarismo romano desejado
         $romanNumberal = '';
+
+        //Iterando sobre a collection maps (Model responsável por representar a tabela maps em POO)
         foreach ($maps as $map) {
 
+            //Loop para verficar se o número decimal informado é maiorp
+            //ou igual ao elemento da vez que está sendo iterado;
             while ($decimalNumber >= $map->decimal_value) {
+                //Montando a estrutura do algarismo romano:
+                //usando concatenaçao podemos obter o algarismo romano correspondente
                 $romanNumberal = $romanNumberal . $map->roman_numeral;
+                //Subtração do valor do numero decimal informado pelo numero encontrado na propriedade decimal_value
                 $decimalNumber = $decimalNumber - $map->decimal_value;
             }
         }
@@ -88,13 +96,13 @@ class MapController extends Controller
 
                 // Se o valor atual for menor que o valor do próximo, subtrai
                 if ($nextCurrentNumber > $currentNumber) {
-                    $decimalNumber -= $currentNumber;
+                    $decimalNumber = $decimalNumber - $currentNumber;
                 } else {
-                    $decimalNumber += $currentNumber;
+                    $decimalNumber = $decimalNumber + $currentNumber;
                 }
             } else {
                 // Se não existir mais caracteres, adiciona o valor atual
-                $decimalNumber += $currentNumber;
+                $decimalNumber = $decimalNumber + $currentNumber;
             }
         }
 
